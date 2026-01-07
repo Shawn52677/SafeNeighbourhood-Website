@@ -1,0 +1,69 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package dao;
+
+import bean.ViewUserBean;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+import model.User;
+
+/**
+ *
+ * @author VTEC
+ */
+public class ViewUserDao {
+    
+    private String jdbcURL = "jdbc:derby://localhost:1527/SafeNeighbourhoodDB";
+    private String jdbcUsername = "app";
+    private String jdbcPassword = "app";
+    private String jdbcDriver = "org.apache.derby.jdbc.ClientDriver";
+
+    public void loadDriver(String driver) {
+        try {
+            Class.forName(driver);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Connection getConnection() {
+        Connection connection = null;
+        try {
+            connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return connection;
+    }
+
+    public String viewUser(ViewUserBean viewUserBean) {
+        loadDriver(jdbcDriver);
+        Connection connection = getConnection();
+        String result = "Data entered successfully";
+        String sql = "SELECT * FROM users";
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, viewUserBean.getId());
+            ps.setString(2, viewUserBean.getUsername());
+            ps.setString(3, viewUserBean.getPassword());
+            ps.setString(4, viewUserBean.getRole());
+            ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            result = "Data insertion failed";
+        }
+
+        return result;
+    }
+
+    public List<User> getAllUsers() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+}
